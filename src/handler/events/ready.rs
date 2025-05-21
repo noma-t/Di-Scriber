@@ -1,20 +1,25 @@
-use serenity::all::CommandOptionType;
-use serenity::builder::{CreateCommand, CreateCommandOption};
-use serenity::prelude::{
-    Context,
+use serenity::all::{
+    CommandOptionType,
+    CreateCommand,
+    CreateCommandOption,
+    Ready,
+    GuildId,
+    Context
 };
-use serenity::model::gateway::Ready;
-use serenity::model::id::GuildId;
+use crate::config;
 
 pub async fn ready(ctx: &Context, ready: Ready) {
-    let config = crate::config::get();
+    let config = config::get();
+    
+    // Print the bot's name and ID
     println!("{}",
         config.event.ready.output
             .replace("{name}", &ready.user.name)
             .replace("{id}", &ready.user.id.to_string())
     );
     
-    let guild_id = GuildId::new(crate::config::get().discord.guild_id);
+    // Register slash commands
+    let guild_id = GuildId::new(config.discord.guild_id);
     
     let commands = guild_id
         .set_commands(
@@ -31,6 +36,8 @@ pub async fn ready(ctx: &Context, ready: Ready) {
                 )],
         )
         .await;
+    
+    // Handle the result of the command registration
     match commands {
         Ok(_) => println!("Commands registered successfully"),
         Err(err) => eprintln!("Error registering commands: {:?}", err),
