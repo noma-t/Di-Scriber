@@ -1,7 +1,13 @@
-use serenity::{async_trait};
-use serenity::prelude::{Context, EventHandler};
-use serenity::model::gateway::Ready;
-use crate::handler::events::ready;
+use serenity::all::{
+    Interaction,
+    async_trait,
+    Context,
+    EventHandler,
+    Ready,
+};
+use crate::handler::events::{
+    ready, interaction_create
+};
 
 pub struct Handler;
 
@@ -9,5 +15,8 @@ pub struct Handler;
 impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
         ready::ready(&ctx, ready).await;
+    }
+    async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
+        interaction_create::interaction_create(&ctx, interaction).await;
     }
 }
