@@ -7,11 +7,24 @@ use std::sync::RwLock;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Configs {
+    pub message: MessageConfig,
     pub event: EventConfig,
     pub command: CommandConfig,
     pub modal: ModalConfig,
     #[serde(skip)]
     pub discord: DiscordConfig,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct MessageConfig {
+    pub content: String,
+    pub button: MessageButtonConfig,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct MessageButtonConfig {
+    pub label: String,
+    pub missing_role: String
 }
 
 #[derive(Debug, Clone, Deserialize, Default)]
@@ -39,6 +52,7 @@ pub struct CommandConfig {
 pub struct CreateCommandConfig {
     pub name: String,
     pub description: String,
+    pub success_message: String,
     pub options: CreateCommandOptionsConfig
 }
 
@@ -85,10 +99,20 @@ pub fn init() -> Result<(), ConfigError> {
     app_config.discord = DiscordConfig {
         bot_token: env::var("DISCORD_BOT_TOKEN")
             .expect("DISCORD_BOT_TOKEN must be set in .env file"),
+        // guild_id: env::var("DISCORD_GUILD_ID")
+        //     .expect("DISCORD_GUILD_ID must be set in .env file")
+        //     .parse()
+        //     .expect("DISCORD_GUILD_ID must be a valid integer"),
         guild_id: env::var("DISCORD_GUILD_ID")
-            .expect("DISCORD_GUILD_ID must be set in .env file")
-            .parse()
-            .expect("DISCORD_GUILD_ID must be a valid integer"),
+            .ok()
+            .and_then(|id| {
+                if id.trim().is_empty() {
+                    None
+                } else {
+                    id.parse::<u64>().ok()
+                }
+            })
+            .unwrap_or(0)
     };
     
     let mut config_writer = CONFIG.write().unwrap();
