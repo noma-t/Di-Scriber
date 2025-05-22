@@ -18,27 +18,27 @@ pub async fn ready(ctx: &Context, ready: Ready) {
             .replace("{id}", &ready.user.id.to_string())
     );
     
-    // Register slash commands
-    let guild_id = GuildId::new(config.discord.guild_id);
+    let command = CreateCommand::new(&config.command.create.name)
+        .description(&config.command.create.description)
+        .add_option(
+            CreateCommandOption::new(
+                CommandOptionType::Role,
+                &config.command.create.options.role.name,
+                &config.command.create.options.role.description,
+            )
+            .required(false),
+        );
     
-    let commands = guild_id
-        .set_commands(
-            &ctx.http,
-            vec![CreateCommand::new(&config.command.create.name)
-                .description(&config.command.create.description)
-                .add_option(
-                    CreateCommandOption::new(
-                        CommandOptionType::Role,
-                        &config.command.create.options.role.name,
-                        &config.command.create.options.role.description,
-                    )
-                    .required(false),
-                )],
-        )
-        .await;
+    // Register slash commands
+    let registered_commands = if config.discord.guild_id != 0 {
+        let guild_id = GuildId::new(config.discord.guild_id);
+        guild_id.create_command(&ctx.http, command).await
+    } else {
+        ctx.http.create_global_command(&command).await
+    };
     
     // Handle the result of the command registration
-    match commands {
+    match registered_commands {
         Ok(_) => println!("Commands registered successfully"),
         Err(err) => eprintln!("Error registering commands: {:?}", err),
     }
