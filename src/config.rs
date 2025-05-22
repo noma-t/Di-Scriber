@@ -99,10 +99,6 @@ pub fn init() -> Result<(), ConfigError> {
     app_config.discord = DiscordConfig {
         bot_token: env::var("DISCORD_BOT_TOKEN")
             .expect("DISCORD_BOT_TOKEN must be set in .env file"),
-        // guild_id: env::var("DISCORD_GUILD_ID")
-        //     .expect("DISCORD_GUILD_ID must be set in .env file")
-        //     .parse()
-        //     .expect("DISCORD_GUILD_ID must be a valid integer"),
         guild_id: env::var("DISCORD_GUILD_ID")
             .ok()
             .and_then(|id| {

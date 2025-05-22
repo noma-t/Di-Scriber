@@ -1,4 +1,4 @@
-use serenity::all::{ActionRowComponent, ButtonStyle, CommandInteraction, Context, CreateActionRow, CreateButton, CreateInteractionResponse, CreateInteractionResponseFollowup, CreateInteractionResponseMessage, CreateMessage};
+use serenity::all::{ButtonStyle, CommandInteraction, Context, CreateActionRow, CreateButton, CreateInteractionResponse, CreateInteractionResponseMessage, CreateMessage};
 
 pub async fn create(ctx: &Context, command: &CommandInteraction) -> Result<(), serenity::Error> {
     let config = crate::config::get();

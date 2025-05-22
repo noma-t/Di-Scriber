@@ -1,4 +1,4 @@
-use serenity::all::{ChannelId, Context, EditMessage, InputText, MessageId, ModalInteraction, ActionRowComponent, CreateInteractionResponse};
+use serenity::all::{ChannelId, Context, EditMessage, MessageId, ModalInteraction, ActionRowComponent, CreateInteractionResponse};
 
 pub async fn edit(ctx: &Context, modal: &ModalInteraction) {
     let custom_id_parts: Vec<&str> = modal.data.custom_id.split(':').collect();
